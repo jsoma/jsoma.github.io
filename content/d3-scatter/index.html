@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>D3 Scales</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+    <style>
+      svg { 
+        background: #f9f9f9;
+        display: block;
+        margin: 0 auto;
+      }
+
+      h1 { margin-bottom: 2rem; }
+
+      body {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+      }
+
+      h3 { 
+        margin-top: 3rem; 
+        margin-bottom: 1rem;
+      }
+
+      .container {
+        max-width: 46rem;
+      }
+
+      img.block {
+        display: block;
+        border: solid #333 1p;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+</head>
+<body>
+{{> navbar }}
+
+<div class="container">
+  <h1>D3, do your magic!</h1>
+  <p>Blah blah something about <span class="asia-text">Asia</span> and then also something about <span class="oceania-text">Oceania</span>.</p>
+  <p>Blah blah <span class="asia-text">Japan</span> and blah blah <span class="asia-text">China</span> and blah blah <span class="oceania-text">Australia</span></p>
+  <div id="chart"></div>
+</div>
+
+{{> copyright_footer }}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.7.0/d3.min.js" integrity="sha512-cd6CHE+XWDQ33ElJqsi0MdNte3S+bQY819f7p3NUHgwQQLXSKjE4cPZTeGNI+vaxZynk1wVU3hoHmow3m089wA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="d3-start-finish.js"></script>
+</body>
+</html>

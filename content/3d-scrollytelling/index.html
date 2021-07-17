@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Scrollama: Sticky Overlay Example</title>
+    <meta name="description" content="Scrollama: Sticky Overlay Example" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      #scrolly {
+        position: relative;
+      }
+
+      article {
+        position: relative;
+        padding: 0;
+        max-width: 30rem;
+        margin: 0 auto;
+        padding-bottom: 10rem;
+      }
+
+      .sticky-thing {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        z-index: 0;
+
+        /* Make 75%, centered */
+        top: 12.5vh;
+        height: 75vh;
+
+        /* Make full-height */
+        top: 0vh;
+        height: 100vh;
+
+        /* Center everything inside */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .step {
+        margin: 0 auto 20rem auto;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      .step:last-child {
+        margin-bottom: 0;
+      }
+
+      .step.is-active {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+
+      .step p {
+        text-align: center;
+        padding: 1rem;
+        font-size: 1rem;
+      }
+
+    </style>
+    <link type="text/css" href="model-styles.css" rel="stylesheet"/>
+    <!-- OPTIONAL: The :focus-visible polyfill removes the focus ring for some input types -->
+    <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
+  </head>
+
+  <body>
+    {{> navbar }}
+    <main>
+
+      <section id="intro">
+        <h1>This is a story in 3D</h1>
+      </section>
+
+      <section id="scrolly">
+        <div class="sticky-thing">
+
+          <model-viewer src="spaceship.glb" autoplay animation-name="CameraAction.001" camera-orbit="362.6deg 82.1deg 66.48m" min-camera-orbit="auto auto auto" max-camera-orbit="auto auto 66.48m">
+            <button class="Hotspot" slot="hotspot-1" data-position="0.38754332519020096m 3.2326931161794406m 2.317003636457727m" data-normal="0.0828781101051602m -0.13313351389544906m 0.9876267950715226m" data-visibility-attribute="visible">
+                <div class="HotspotAnnotation">spaceship</div>
+            </button><button class="Hotspot" slot="hotspot-2" data-position="-5.623663660805911m 0.3698053175345599m 12.081738403468709m" data-normal="-0.00000564717634778357m -0.9999999999840548m 4.333262064640039e-9m" data-visibility-attribute="visible">
+                <div class="HotspotAnnotation">control panel</div>
+            </button><button class="Hotspot" slot="hotspot-3" data-position="-8.500917708295345m 16.66474482719247m -0.058660456866437984m" data-normal="0.9241514814784376m -0.18445874486490058m -0.3345429878566801m" data-visibility-attribute="visible">
+                <div class="HotspotAnnotation">tower</div>
+            </button><button class="Hotspot" slot="hotspot-5" data-position="7.616543200052789m -3.1468218084517137m 0.222183850183703m" data-normal="0m -0.034832149497507854m 0.9993931765633501m" data-visibility-attribute="visible">
+                <div class="HotspotAnnotation">penguin</div>
+            </button>
+            <div class="progress-bar hide" slot="progress-bar">
+                <div class="update-bar"></div>
+            </div>
+        </model-viewer>
+        
+
+
+
+
+        </div>
+
+        <article>
+          <div class="step">
+            <p>This is step 1.</p>
+          </div>
+          <div class="step">
+            <p>This is step 2.</p>
+          </div>
+          <div class="step">
+            <p>This is step 3.</p>
+          </div>
+          <div><!-- spacer --></div>
+        </article>
+      </section>
+
+      <section id="outro"></section>
+    </main>
+
+    <!-- <div class='debug'></div> -->
+    <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
+    <script src="https://unpkg.com/scrollama"></script>
+    <script>
+      // using d3 for convenience
+      var main = document.querySelector("main");
+      var scrolly = main.querySelector("#scrolly");
+      var article = scrolly.querySelector("article");
+      var steps = article.querySelectorAll(".step");
+      var viewer = document.querySelector("model-viewer");
+
+      // initialize the scrollama
+      var scroller = scrollama();
+
+      function highlight(materialNumber, highlightColor=[0.7294, 0.5333, 0.0392]) {
+        if(!viewer.model) {
+          return setTimeout(() => highlight(materialNumber), 100);
+        }
+        let material = viewer.model.materials[materialNumber];
+        if(!material.originalColor) {
+          material.originalColor = material.pbrMetallicRoughness.baseColorFactor;
+        }
+        material.pbrMetallicRoughness.setBaseColorFactor(highlightColor);
+      }
+
+      function unhighlight(materialNumber) {
+        if(!viewer.model) {
+          return setTimeout(() => highlight(materialNumber), 100);
+        }
+        let material = viewer.model.materials[materialNumber];
+        material.pbrMetallicRoughness.setBaseColorFactor(material.originalColor);
+      }
+
+      function handleStepEnter(response) {
+        console.log("Running step", response.index);
+
+        // Get the step so we can use any data- information
+        var el = response.element;
+
+        // Remove is-active from all steps then add is-active to this step
+        steps.forEach(step => step.classList.remove('is-active'));
+        el.classList.add('is-active');
+
+        if(response.index === 0) {
+          viewer.cameraTarget = "0.38754332519020096m 3.2326931161794406m 2.317003636457727m";
+          viewer.cameraOrbit = "0deg 90deg 10m";
+          // Get the model in the viewer
+          // grab material #4
+          // set the base color of the... metal? to be
+          // whatever you want
+          // viewer.model
+          //   .materials[4]
+          //   .pbrMetallicRoughness
+          //   .setBaseColorFactor([0.952, 0.098, 0.980])
+
+          // or! use my function:
+          // let's highlight color 4 with this color
+          highlight(4, [0.952, 0.098, 0.980])
+        } else {
+          unhighlight(4);
+        }
+        
+        if (response.index === 1) {
+          viewer.cameraTarget = "-8.500917708295345m 16.66474482719247m -0.058660456866437984m";
+          viewer.cameraOrbit = "45deg 45deg 50m";
+          highlight(0);
+        } else {
+          unhighlight(0);
+        }
+        
+        if (response.index === 2) {
+          // copy the data-position of a hotspot
+          // "-5.623663660805911m 0.3698053175345599m 12.081738403468709m"
+          // set it equal to viewer.cameraTarget
+          viewer.cameraTarget = "-5.623663660805911m 0.3698053175345599m 12.081738403468709m"
+          // in the JS console, run
+          // viewer.cameraOrbit = "0deg 0deg 10m"
+          // then change the degrees and
+          // meters until you like the view
+          viewer.cameraOrbit = "-20deg 70deg 10m"
+          highlight(19);
+        } else {
+          unhighlight(19);
+        }
+
+        
+
+      }
+
+      function handleStepExit(response) {
+        if(response.index == 0 && response.direction === "up") {
+          // Exiting the first step by scrolling up:
+          // You can reset everything here to be the "original" state
+          steps.forEach(step => step.classList.remove('is-active'));
+          viewer.cameraTarget = "auto auto auto";
+          viewer.cameraOrbit = "auto auto auto";
+          unhighlight(4);
+        }
+      }
+
+      function init() {
+        // 2. setup the scroller passing options
+        // 		this will also initialize trigger observations
+        // 3. bind scrollama event handlers (this can be chained like below)
+        scroller
+          .setup({
+            step: "#scrolly article .step",
+            offset: 0.5,
+            debug: true
+          })
+          .onStepEnter(handleStepEnter)
+          .onStepExit(handleStepExit);
+
+        // setup resize event
+        window.addEventListener("resize", scroller.resize);
+      }
+
+      // kick things off
+      init();
+    </script>
+    <script src="model-script.js"></script>
+    <!-- Loads <model-viewer> for browsers: -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  </body>
+</html>

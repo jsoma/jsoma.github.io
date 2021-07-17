@@ -1,0 +1,10 @@
+---
+title: This is a sample project!!!!
+gdoc: https://docs.google.com/document/d/126LLa_EKG_nBbmA53HCG3pMVbjKBRnQWJWDL9FUSmHo/edit?usp=sharing
+---
+
+{{> page_header }}
+
+{{{processed_content}}}
+
+{{> page_footer }}
